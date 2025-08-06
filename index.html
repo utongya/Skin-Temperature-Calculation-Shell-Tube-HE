@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heat Exchanger Skin Temperature Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4A5568;
+            font-weight: 500;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4299E1;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+        }
+        .result-card {
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Shell & Tube Heat Exchanger Skin Temperature Calculator</h1>
+                <p class="text-sm text-gray-500 mt-2">Created by Unnop Tongya</p>
+            </div>
+            
+            <!-- Error Message Box -->
+            <div id="error-box" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+                <strong class="font-bold">Error:</strong>
+                <span id="error-message" class="block sm:inline"></span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                <!-- Input Section -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Input Parameters</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                        <div class="input-group">
+                            <label for="heat-duty" class="input-label">Heat Duty (kW)</label>
+                            <input type="number" id="heat-duty" class="input-field" placeholder="e.g., 5000">
+                        </div>
+                        <div class="input-group">
+                            <label for="flow-rate" class="input-label">Flow Rate (m³/hr)</label>
+                            <input type="number" id="flow-rate" class="input-field" placeholder="e.g., 200">
+                        </div>
+                        <div class="input-group">
+                            <label for="cw-inlet-temp" class="input-label">CW Inlet Temp (°C)</label>
+                            <input type="number" id="cw-inlet-temp" class="input-field" placeholder="e.g., 25">
+                        </div>
+                        <div class="input-group">
+                            <label for="cw-outlet-temp" class="input-label">CW Outlet Temp (°C)</label>
+                            <input type="number" id="cw-outlet-temp" class="input-field" placeholder="e.g., 35">
+                        </div>
+                        <div class="input-group">
+                            <label for="tube-id" class="input-label">Tube ID (m)</label>
+                            <input type="number" id="tube-id" class="input-field" placeholder="e.g., 0.019">
+                        </div>
+                        <div class="input-group">
+                            <label for="tube-length" class="input-label">Tube Length (m)</label>
+                            <input type="number" id="tube-length" class="input-field" placeholder="e.g., 6">
+                        </div>
+                        <div class="input-group">
+                            <label for="total-tubes" class="input-label">Total Tubes</label>
+                            <input type="number" id="total-tubes" class="input-field" placeholder="e.g., 400">
+                        </div>
+                        <div class="input-group">
+                            <label for="tube-passes" class="input-label">No. Tube Passes</label>
+                            <input type="number" id="tube-passes" class="input-field" placeholder="e.g., 2">
+                        </div>
+                    </div>
+                     <div class="input-group mt-4">
+                        <label for="configuration" class="input-label">Configuration</label>
+                        <select id="configuration" class="input-field bg-white">
+                            <option value="cocurrent">Co-Current</option>
+                            <option value="countercurrent">Counter-Current</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Calculation Results</h2>
+                    <div id="results-card" class="result-card opacity-0 bg-gray-50 p-6 rounded-lg space-y-4">
+                        <div class="flex justify-between items-center">
+                            <p class="font-medium text-gray-600">Total Tube Surface Area:</p>
+                            <p id="result-area" class="font-bold text-lg text-gray-800">-- m²</p>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <p class="font-medium text-gray-600">Heat Flux:</p>
+                            <p id="result-flux" class="font-bold text-lg text-gray-800">-- kW/m²</p>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <p class="font-medium text-gray-600">Tube Flow Velocity:</p>
+                            <p id="result-velocity" class="font-bold text-lg text-gray-800">-- m/s</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t-2 border-dashed border-blue-300">
+                             <div class="flex justify-between items-center bg-blue-100 p-4 rounded-lg">
+                                <p class="font-semibold text-blue-800 text-lg">Tube Skin Temperature:</p>
+                                <p id="result-skin-temp" class="font-extrabold text-2xl text-blue-600">-- °C</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="mt-8 text-center">
+                <button onclick="calculateSkinTemperature()" class="bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    Calculate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateSkinTemperature() {
+            // --- 1. Get Input Values ---
+            const inputs = {
+                heatDuty: parseFloat(document.getElementById('heat-duty').value),
+                flowRate: parseFloat(document.getElementById('flow-rate').value),
+                cwInletTemp: parseFloat(document.getElementById('cw-inlet-temp').value),
+                cwOutletTemp: parseFloat(document.getElementById('cw-outlet-temp').value),
+                tubeId: parseFloat(document.getElementById('tube-id').value),
+                tubeLength: parseFloat(document.getElementById('tube-length').value),
+                totalTubes: parseInt(document.getElementById('total-tubes').value),
+                tubePasses: parseInt(document.getElementById('tube-passes').value),
+                configuration: document.getElementById('configuration').value,
+            };
+
+            // --- 2. Validate Inputs ---
+            const errorBox = document.getElementById('error-box');
+            const errorMessage = document.getElementById('error-message');
+            const resultsCard = document.getElementById('results-card');
+            
+            // Define which fields must be numeric
+            const numericFields = [
+                'heatDuty', 'flowRate', 'cwInletTemp', 'cwOutletTemp',
+                'tubeId', 'tubeLength', 'totalTubes', 'tubePasses'
+            ];
+
+            // Loop through only the numeric fields for validation
+            for (const key of numericFields) {
+                if (isNaN(inputs[key])) {
+                    errorMessage.textContent = `Please enter a valid number for all fields. Failed at '${key}'.`;
+                    errorBox.classList.remove('hidden');
+                    resultsCard.classList.add('opacity-0');
+                    return;
+                }
+                 if (inputs[key] <= 0) {
+                    errorMessage.textContent = `Input values must be positive. Failed at '${key}'.`;
+                    errorBox.classList.remove('hidden');
+                    resultsCard.classList.add('opacity-0');
+                    return;
+                }
+            }
+            
+            // Specific validation for tube passes
+            if (inputs.totalTubes % inputs.tubePasses !== 0) {
+                 errorMessage.textContent = 'Total number of tubes must be divisible by the number of tube passes.';
+                 errorBox.classList.remove('hidden');
+                 resultsCard.classList.add('opacity-0');
+                 return;
+            }
+            errorBox.classList.add('hidden'); // Hide error box if all inputs are valid
+
+            // --- 3. Perform Calculations ---
+
+            // a) Total Tube Surface Area (m^2)
+            // Formula: A = N_t * PI * D_i * L
+            const totalArea = inputs.totalTubes * Math.PI * inputs.tubeId * inputs.tubeLength;
+            if (!isFinite(totalArea) || totalArea === 0) {
+                errorMessage.textContent = 'Calculation error: Total surface area is zero or invalid.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            // b) Heat Flux (kW/m^2)
+            // Formula: q = Q / A
+            const heatFlux = inputs.heatDuty / totalArea;
+            if (!isFinite(heatFlux)) {
+                errorMessage.textContent = 'Calculation error: Heat flux is invalid.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            // c) Tube Flow Velocity (m/s)
+            // Formula: v = V_dot / A_flow
+            const flowRateM3s = inputs.flowRate / 3600; // Convert m^3/hr to m^3/s
+            const tubesPerPass = inputs.totalTubes / inputs.tubePasses;
+            const areaPerTube = Math.PI * Math.pow(inputs.tubeId / 2, 2);
+            const totalFlowArea = tubesPerPass * areaPerTube;
+            
+            if (totalFlowArea === 0) {
+                 errorMessage.textContent = 'Calculation error: Total flow area is zero. Check tube dimensions and count.';
+                 errorBox.classList.remove('hidden');
+                 return;
+            }
+            const tubeVelocity = flowRateM3s / totalFlowArea;
+            if (!isFinite(tubeVelocity) || tubeVelocity === 0) {
+                errorMessage.textContent = 'Calculation error: Tube velocity is zero or invalid.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+
+            // d) Skin Temperature (°C)
+            // Formula depends on configuration
+            let skinTemp;
+            const heatFluxTerm = heatFlux / (3.73 * tubeVelocity);
+            
+            // ** CORRECTED FORMULA LOGIC **
+            if (inputs.configuration === 'cocurrent') {
+                // Co-current uses CW outlet temperature
+                skinTemp = inputs.cwOutletTemp + heatFluxTerm;
+            } else { // Counter-current
+                // Counter-current uses CW inlet temperature
+                skinTemp = inputs.cwInletTemp + heatFluxTerm;
+            }
+            
+            if (!isFinite(skinTemp)) {
+                 errorMessage.textContent = 'Calculation error: Final skin temperature is invalid.';
+                 errorBox.classList.remove('hidden');
+                 return;
+            }
+
+            // --- 4. Display Results ---
+            document.getElementById('result-area').textContent = `${totalArea.toFixed(2)} m²`;
+            document.getElementById('result-flux').textContent = `${heatFlux.toFixed(2)} kW/m²`;
+            document.getElementById('result-velocity').textContent = `${tubeVelocity.toFixed(3)} m/s`;
+            document.getElementById('result-skin-temp').textContent = `${skinTemp.toFixed(2)} °C`;
+            
+            resultsCard.classList.remove('opacity-0');
+        }
+    </script>
+</body>
+</html>
