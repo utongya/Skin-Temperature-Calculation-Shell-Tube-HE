@@ -231,10 +231,10 @@
             // ** CORRECTED FORMULA LOGIC **
             if (inputs.configuration === 'cocurrent') {
                 // Co-current uses CW outlet temperature
-                skinTemp = inputs.cwOutletTemp + heatFluxTerm;
+                skinTemp = inputs.cwInletTemp + heatFluxTerm;
             } else { // Counter-current
                 // Counter-current uses CW inlet temperature
-                skinTemp = inputs.cwInletTemp + heatFluxTerm;
+                skinTemp = inputs.cwOutletTemp + heatFluxTerm;
             }
             
             if (!isFinite(skinTemp)) {
@@ -254,3 +254,4 @@
     </script>
 </body>
 </html>
+
