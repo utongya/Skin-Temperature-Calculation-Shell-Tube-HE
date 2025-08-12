@@ -105,18 +105,27 @@
                             <p class="font-medium text-gray-600">Total Tube Surface Area:</p>
                             <p id="result-area" class="font-bold text-lg text-gray-800">-- m²</p>
                         </div>
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-start">
                             <p class="font-medium text-gray-600">Heat Flux:</p>
-                            <p id="result-flux" class="font-bold text-lg text-gray-800">-- kW/m²</p>
+                            <div class="text-right">
+                                <p id="result-flux" class="font-bold text-lg text-gray-800">-- kW/m²</p>
+                                <p id="flux-stress" class="text-sm font-semibold">--</p>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-start">
                             <p class="font-medium text-gray-600">Tube Flow Velocity:</p>
-                            <p id="result-velocity" class="font-bold text-lg text-gray-800">-- m/s</p>
+                             <div class="text-right">
+                                <p id="result-velocity" class="font-bold text-lg text-gray-800">-- m/s</p>
+                                <p id="velocity-stress" class="text-sm font-semibold">--</p>
+                            </div>
                         </div>
                         <div class="mt-4 pt-4 border-t-2 border-dashed border-blue-300">
-                             <div class="flex justify-between items-center bg-blue-100 p-4 rounded-lg">
+                             <div class="flex justify-between items-start bg-blue-100 p-4 rounded-lg">
                                 <p class="font-semibold text-blue-800 text-lg">Tube Skin Temperature:</p>
-                                <p id="result-skin-temp" class="font-extrabold text-2xl text-blue-600">-- °C</p>
+                                <div class="text-right">
+                                    <p id="result-skin-temp" class="font-extrabold text-2xl text-blue-600">-- °C</p>
+                                    <p id="skin-temp-stress" class="text-sm font-semibold">--</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -133,6 +142,41 @@
     </div>
 
     <script>
+        /**
+         * Determines the stress level and color based on a calculated value and its type.
+         * @param {number} value The calculated value (e.g., temperature, velocity, flux).
+         * @param {string} type The type of value ('temp', 'velocity', or 'flux').
+         * @returns {{text: string, colorClass: string}} An object with the stress text and Tailwind CSS color class.
+         */
+        function getStressLevel(value, type) {
+            let stress = { text: 'N/A', colorClass: 'text-gray-500' };
+            // ** UPDATED COLOR CLASSES FOR BETTER VISIBILITY **
+            const colors = {
+                mild: 'text-green-400',
+                moderate: 'text-yellow-400', 
+                high: 'text-fuchsia-400', // Using fuchsia for a brighter magenta/pink
+                severe: 'text-red-400'
+            };
+
+            if (type === 'temp') {
+                if (value < 50) stress = { text: 'Mild Stress', colorClass: colors.mild };
+                else if (value >= 50 && value <= 60) stress = { text: 'Moderate Stress', colorClass: colors.moderate };
+                else if (value > 60 && value <= 70) stress = { text: 'High Stress', colorClass: colors.high };
+                else if (value > 70) stress = { text: 'Severe Stress', colorClass: colors.severe };
+            } else if (type === 'velocity') {
+                if (value > 1) stress = { text: 'Mild Stress', colorClass: colors.mild };
+                else if (value >= 0.6 && value <= 1) stress = { text: 'Moderate Stress', colorClass: colors.moderate };
+                else if (value >= 0.3 && value < 0.6) stress = { text: 'High Stress', colorClass: colors.high };
+                else if (value < 0.3) stress = { text: 'Severe Stress', colorClass: colors.severe };
+            } else if (type === 'flux') {
+                if (value < 7.5) stress = { text: 'Mild Stress', colorClass: colors.mild };
+                else if (value >= 7.5 && value <= 25) stress = { text: 'Moderate Stress', colorClass: colors.moderate };
+                else if (value > 25 && value <= 40) stress = { text: 'High Stress', colorClass: colors.high };
+                else if (value > 40) stress = { text: 'Severe Stress', colorClass: colors.severe };
+            }
+            return stress;
+        }
+
         function calculateSkinTemperature() {
             // --- 1. Get Input Values ---
             const inputs = {
@@ -152,13 +196,11 @@
             const errorMessage = document.getElementById('error-message');
             const resultsCard = document.getElementById('results-card');
             
-            // Define which fields must be numeric
             const numericFields = [
                 'heatDuty', 'flowRate', 'cwInletTemp', 'cwOutletTemp',
                 'tubeId', 'tubeLength', 'totalTubes', 'tubePasses'
             ];
 
-            // Loop through only the numeric fields for validation
             for (const key of numericFields) {
                 if (isNaN(inputs[key])) {
                     errorMessage.textContent = `Please enter a valid number for all fields. Failed at '${key}'.`;
@@ -174,19 +216,15 @@
                 }
             }
             
-            // Specific validation for tube passes
             if (inputs.totalTubes % inputs.tubePasses !== 0) {
                  errorMessage.textContent = 'Total number of tubes must be divisible by the number of tube passes.';
                  errorBox.classList.remove('hidden');
                  resultsCard.classList.add('opacity-0');
                  return;
             }
-            errorBox.classList.add('hidden'); // Hide error box if all inputs are valid
+            errorBox.classList.add('hidden');
 
             // --- 3. Perform Calculations ---
-
-            // a) Total Tube Surface Area (m^2)
-            // Formula: A = N_t * PI * D_i * L
             const totalArea = inputs.totalTubes * Math.PI * inputs.tubeId * inputs.tubeLength;
             if (!isFinite(totalArea) || totalArea === 0) {
                 errorMessage.textContent = 'Calculation error: Total surface area is zero or invalid.';
@@ -194,8 +232,6 @@
                 return;
             }
 
-            // b) Heat Flux (kW/m^2)
-            // Formula: q = Q / A
             const heatFlux = inputs.heatDuty / totalArea;
             if (!isFinite(heatFlux)) {
                 errorMessage.textContent = 'Calculation error: Heat flux is invalid.';
@@ -203,9 +239,7 @@
                 return;
             }
 
-            // c) Tube Flow Velocity (m/s)
-            // Formula: v = V_dot / A_flow
-            const flowRateM3s = inputs.flowRate / 3600; // Convert m^3/hr to m^3/s
+            const flowRateM3s = inputs.flowRate / 3600;
             const tubesPerPass = inputs.totalTubes / inputs.tubePasses;
             const areaPerTube = Math.PI * Math.pow(inputs.tubeId / 2, 2);
             const totalFlowArea = tubesPerPass * areaPerTube;
@@ -222,19 +256,13 @@
                 return;
             }
 
-
-            // d) Skin Temperature (°C)
-            // Formula depends on configuration
             let skinTemp;
             const heatFluxTerm = heatFlux / (3.73 * tubeVelocity);
             
-            // ** CORRECTED FORMULA LOGIC **
             if (inputs.configuration === 'cocurrent') {
-                // Co-current uses CW outlet temperature
-                skinTemp = inputs.cwInletTemp + heatFluxTerm;
-            } else { // Counter-current
-                // Counter-current uses CW inlet temperature
                 skinTemp = inputs.cwOutletTemp + heatFluxTerm;
+            } else { 
+                skinTemp = inputs.cwInletTemp + heatFluxTerm;
             }
             
             if (!isFinite(skinTemp)) {
@@ -243,15 +271,32 @@
                  return;
             }
 
-            // --- 4. Display Results ---
+            // --- 4. Display Results & Stress Levels ---
             document.getElementById('result-area').textContent = `${totalArea.toFixed(2)} m²`;
+
+            // Heat Flux
+            const fluxStress = getStressLevel(heatFlux, 'flux');
             document.getElementById('result-flux').textContent = `${heatFlux.toFixed(2)} kW/m²`;
+            const fluxStressEl = document.getElementById('flux-stress');
+            fluxStressEl.textContent = fluxStress.text;
+            fluxStressEl.className = `text-sm font-semibold text-right ${fluxStress.colorClass}`;
+
+            // Tube Flow Velocity
+            const velocityStress = getStressLevel(tubeVelocity, 'velocity');
             document.getElementById('result-velocity').textContent = `${tubeVelocity.toFixed(3)} m/s`;
+            const velocityStressEl = document.getElementById('velocity-stress');
+            velocityStressEl.textContent = velocityStress.text;
+            velocityStressEl.className = `text-sm font-semibold text-right ${velocityStress.colorClass}`;
+
+            // Tube Skin Temperature
+            const tempStress = getStressLevel(skinTemp, 'temp');
             document.getElementById('result-skin-temp').textContent = `${skinTemp.toFixed(2)} °C`;
+            const skinTempStressEl = document.getElementById('skin-temp-stress');
+            skinTempStressEl.textContent = tempStress.text;
+            skinTempStressEl.className = `text-sm font-semibold text-right ${tempStress.colorClass}`;
             
             resultsCard.classList.remove('opacity-0');
         }
     </script>
 </body>
 </html>
-
