@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -44,108 +44,106 @@
         }
     </style>
 </head>
-<body class="bg-blue-50 flex items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-4xl mx-auto">
-        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Shell & Tube Heat Exchanger Skin Temperature Calculator</h1>
-                <p class="text-sm text-gray-500 mt-2">Created by Unnop Tongya</p>
-            </div>
-            
-            <!-- Error Message Box -->
-            <div id="error-box" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
-                <strong class="font-bold">Error:</strong>
-                <span id="error-message" class="block sm:inline"></span>
-            </div>
+<body class="bg-blue-50 min-h-screen p-4 md:grid md:place-items-center">
+    <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 md:p-8 my-8 md:my-0">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Shell & Tube Heat Exchanger Skin Temperature Calculator</h1>
+            <p class="text-sm text-gray-500 mt-2">Created by Unnop Tongya</p>
+        </div>
+        
+        <!-- Error Message Box -->
+        <div id="error-box" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span id="error-message" class="block sm:inline"></span>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-                <!-- Input Section -->
-                <div>
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Input Parameters</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                        <div class="input-group">
-                            <label for="heat-duty" class="input-label">Heat Duty (kW)</label>
-                            <input type="number" id="heat-duty" class="input-field" placeholder="e.g., 5000">
-                        </div>
-                        <div class="input-group">
-                            <label for="flow-rate" class="input-label">Flow Rate (m³/hr)</label>
-                            <input type="number" id="flow-rate" class="input-field" placeholder="e.g., 200">
-                        </div>
-                        <div class="input-group">
-                            <label for="cw-inlet-temp" class="input-label">CW Inlet Temp (°C)</label>
-                            <input type="number" id="cw-inlet-temp" class="input-field" placeholder="e.g., 25">
-                        </div>
-                        <div class="input-group">
-                            <label for="cw-outlet-temp" class="input-label">CW Outlet Temp (°C)</label>
-                            <input type="number" id="cw-outlet-temp" class="input-field" placeholder="e.g., 35">
-                        </div>
-                        <div class="input-group">
-                            <label for="tube-id" class="input-label">Tube ID (m)</label>
-                            <input type="number" id="tube-id" class="input-field" placeholder="e.g., 0.019">
-                        </div>
-                        <div class="input-group">
-                            <label for="tube-length" class="input-label">Tube Length (m)</label>
-                            <input type="number" id="tube-length" class="input-field" placeholder="e.g., 6">
-                        </div>
-                        <div class="input-group">
-                            <label for="total-tubes" class="input-label">Total Tubes</label>
-                            <input type="number" id="total-tubes" class="input-field" placeholder="e.g., 400">
-                        </div>
-                        <div class="input-group">
-                            <label for="tube-passes" class="input-label">No. Tube Passes</label>
-                            <input type="number" id="tube-passes" class="input-field" placeholder="e.g., 2">
-                        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            <!-- Input Section -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Input Parameters</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                    <div class="input-group">
+                        <label for="heat-duty" class="input-label">Heat Duty (kW)</label>
+                        <input type="number" id="heat-duty" class="input-field" placeholder="e.g., 5000">
                     </div>
-                     <div class="input-group mt-4">
-                        <label for="configuration" class="input-label">Configuration</label>
-                        <select id="configuration" class="input-field bg-white">
-                            <option value="cocurrent">Co-Current</option>
-                            <option value="countercurrent">Counter-Current</option>
-                        </select>
+                    <div class="input-group">
+                        <label for="flow-rate" class="input-label">Flow Rate (m³/hr)</label>
+                        <input type="number" id="flow-rate" class="input-field" placeholder="e.g., 200">
+                    </div>
+                    <div class="input-group">
+                        <label for="cw-inlet-temp" class="input-label">CW Inlet Temp (°C)</label>
+                        <input type="number" id="cw-inlet-temp" class="input-field" placeholder="e.g., 25">
+                    </div>
+                    <div class="input-group">
+                        <label for="cw-outlet-temp" class="input-label">CW Outlet Temp (°C)</label>
+                        <input type="number" id="cw-outlet-temp" class="input-field" placeholder="e.g., 35">
+                    </div>
+                    <div class="input-group">
+                        <label for="tube-id" class="input-label">Tube ID (m)</label>
+                        <input type="number" id="tube-id" class="input-field" placeholder="e.g., 0.019">
+                    </div>
+                    <div class="input-group">
+                        <label for="tube-length" class="input-label">Tube Length (m)</label>
+                        <input type="number" id="tube-length" class="input-field" placeholder="e.g., 6">
+                    </div>
+                    <div class="input-group">
+                        <label for="total-tubes" class="input-label">Total Tubes</label>
+                        <input type="number" id="total-tubes" class="input-field" placeholder="e.g., 400">
+                    </div>
+                    <div class="input-group">
+                        <label for="tube-passes" class="input-label">No. Tube Passes</label>
+                        <input type="number" id="tube-passes" class="input-field" placeholder="e.g., 2">
                     </div>
                 </div>
+                 <div class="input-group mt-4">
+                    <label for="configuration" class="input-label">Configuration</label>
+                    <select id="configuration" class="input-field bg-white">
+                        <option value="cocurrent">Co-Current</option>
+                        <option value="countercurrent">Counter-Current</option>
+                    </select>
+                </div>
+            </div>
 
-                <!-- Results Section -->
-                <div>
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Calculation Results</h2>
-                    <div id="results-card" class="result-card opacity-0 bg-gray-50 p-6 rounded-lg space-y-4">
-                        <div class="flex justify-between items-center">
-                            <p class="font-medium text-gray-600">Total Tube Surface Area:</p>
-                            <p id="result-area" class="font-bold text-lg text-gray-800">-- m²</p>
+            <!-- Results Section -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Calculation Results</h2>
+                <div id="results-card" class="result-card opacity-0 bg-gray-50 p-6 rounded-lg space-y-4">
+                    <div class="flex justify-between items-center">
+                        <p class="font-medium text-gray-600">Total Tube Surface Area:</p>
+                        <p id="result-area" class="font-bold text-lg text-gray-800">-- m²</p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="font-medium text-gray-600">Heat Flux:</p>
+                        <div class="text-right">
+                            <p id="result-flux" class="font-bold text-lg text-gray-800">-- kW/m²</p>
+                            <span id="flux-stress" class="stress-badge">--</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <p class="font-medium text-gray-600">Heat Flux:</p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="font-medium text-gray-600">Tube Flow Velocity:</p>
+                         <div class="text-right">
+                            <p id="result-velocity" class="font-bold text-lg text-gray-800">-- m/s</p>
+                            <span id="velocity-stress" class="stress-badge">--</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t-2 border-dashed border-blue-300">
+                         <div class="flex justify-between items-center bg-blue-100 p-4 rounded-lg">
+                            <p class="font-semibold text-blue-800 text-lg">Tube Skin Temperature:</p>
                             <div class="text-right">
-                                <p id="result-flux" class="font-bold text-lg text-gray-800">-- kW/m²</p>
-                                <span id="flux-stress" class="stress-badge">--</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <p class="font-medium text-gray-600">Tube Flow Velocity:</p>
-                             <div class="text-right">
-                                <p id="result-velocity" class="font-bold text-lg text-gray-800">-- m/s</p>
-                                <span id="velocity-stress" class="stress-badge">--</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t-2 border-dashed border-blue-300">
-                             <div class="flex justify-between items-center bg-blue-100 p-4 rounded-lg">
-                                <p class="font-semibold text-blue-800 text-lg">Tube Skin Temperature:</p>
-                                <div class="text-right">
-                                    <p id="result-skin-temp" class="font-extrabold text-2xl text-blue-600">-- °C</p>
-                                    <span id="skin-temp-stress" class="stress-badge">--</span>
-                                </div>
+                                <p id="result-skin-temp" class="font-extrabold text-2xl text-blue-600">-- °C</p>
+                                <span id="skin-temp-stress" class="stress-badge">--</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Action Button -->
-            <div class="mt-8 text-center">
-                <button onclick="calculateSkinTemperature()" class="bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300 ease-in-out transform hover:-translate-y-1">
-                    Calculate
-                </button>
-            </div>
+        <!-- Action Button -->
+        <div class="mt-8 text-center">
+            <button onclick="calculateSkinTemperature()" class="bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                Calculate
+            </button>
         </div>
     </div>
 
